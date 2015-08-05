@@ -8,7 +8,7 @@ from random import choice
 
 from PIL import Image, ImageOps
 from flask import Flask, render_template
-from werkzeug.contrib.cache import SimpleCache
+from werkzeug.contrib.cache import MemcachedCache
 
 from cachedecorator import cache
 
@@ -21,7 +21,7 @@ PHOTOS = glob.glob('images/*')
 
 # We use Flask's simple, in-memory cache. This means this uses pre-generated images on
 # server restart--but given that this is low-volume, that's fine.
-img_cache = SimpleCache()
+img_cache = MemcachedCache(['127.0.0.1:11211'])
 
 
 @app.route('/')
@@ -41,7 +41,8 @@ def photo(x, y):
     In any event, this returns a image/jpg image.
     """
 
-    data = img_cache.get((x, y))
+    key = "%s-%s" % (x, y)
+    data = img_cache.get(key)
 
     if not data:
         # Nothing found in cache; generate
@@ -52,7 +53,7 @@ def photo(x, y):
             img = ImageOps.fit(img, (x, y))
             data = img.tobytes('jpeg', img.mode)
 
-        img_cache.set((x, y), data)
+        img_cache.set(key, data)
 
     return data, 200, {'Content-Type': 'image/jpeg'}
 

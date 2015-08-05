@@ -7,7 +7,7 @@ import glob
 from random import choice
 
 from PIL import Image, ImageOps
-from flask import Flask
+from flask import Flask, render_template
 from werkzeug.contrib.cache import SimpleCache
 
 from cachedecorator import cache
@@ -22,6 +22,11 @@ PHOTOS = glob.glob('images/*')
 # We use Flask's simple, in-memory cache. This means this uses pre-generated images on
 # server restart--but given that this is low-volume, that's fine.
 img_cache = SimpleCache()
+
+
+@app.route('/')
+def homepage():
+    return render_template('index.jinja.html')
 
 
 @app.route('/<int:x>/<int:y>')

@@ -1,5 +1,18 @@
 """PlaceMelon: Your source for high-quality melon images on demand.
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 By Mel Melitpolski and Joel Burton <joel@joelburton.com>.
 """
 
@@ -19,18 +32,19 @@ app = Flask(__name__)
 # large and high-quality.
 PHOTOS = glob.glob('images/*')
 
-# We use Flask's simple, in-memory cache. This means this uses pre-generated images on
-# server restart--but given that this is low-volume, that's fine.
+# Cropped images will be stored in memcache
 img_cache = MemcachedCache(['127.0.0.1:11211'])
 
 
 @app.route('/')
 def homepage():
+    """Show homepage."""
+
     return render_template('index.jinja.html')
 
 
 @app.route('/<int:x>/<int:y>')
-@cache(expires=3600)  # 1 hour
+@cache(expires=3600)  # 3600 seconds = 1 hour
 def photo(x, y):
     """Generate an image with size(x,y) and return it.
 

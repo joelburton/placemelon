@@ -61,9 +61,9 @@ def photo(x, y):
     if not data:
         # Nothing found in cache; generate
 
-        photo = choice(PHOTOS)
+        random_photo = choice(PHOTOS)
 
-        with Image.open(photo) as img:
+        with Image.open(random_photo) as img:
             img = ImageOps.fit(img, (x, y))
             data = img.tobytes('jpeg', img.mode)
 
